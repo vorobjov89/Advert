@@ -38,4 +38,4 @@ if __name__ == '__main__':
     iphone = Advert(iphone_str)
     python = Advert(python_str)
 
-    print(python)
+    print(corgi)
