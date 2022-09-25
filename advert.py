@@ -67,12 +67,12 @@ class Advert(ColorizeMixin, JSONToObject):
 
         setattr(self.__class__, 'price', property(self.get_price, self.set_price))  # Меняем свойство для price.
         if hasattr(self, '_price'):
-            self.__setattr__('price', self.price)  # Нужно для проверки ValueError при создании объекта
+            self.__setattr__('price', self._price)  # Нужно для проверки ValueError при создании объекта
 
     @staticmethod
     def get_price(obj):
         """
-        Делаем свой 'getter' для price.
+        Делаем свой 'fget' для price.
         Свойство - атрибут класса, а не экземпляра; вместе с тем, функция fget, скармливаемая в объект свойства,
         не нуждается в ссылке на класс, для которого она реализует какую-то логику. Поэтому выбираем декоратор
         @staticmethod. Без него fget бы принимал лишний параметр - вторую ссылку на использующий свойство объект.
@@ -86,7 +86,7 @@ class Advert(ColorizeMixin, JSONToObject):
     @staticmethod
     def set_price(obj, value):
         """
-        Делаем свой 'setter' для price
+        Делаем свой 'fset' для price
         Логика метода описана выше - см. комментарий к 'getter'у.
         """
         if hasattr(obj, '_price'):
@@ -96,6 +96,11 @@ class Advert(ColorizeMixin, JSONToObject):
                 obj.__setattr__('_price', value)
 
     def __repr__(self):
+        """
+        Насчет этого метода я так и не понял, предполагалось ли его подмешивать, или реализовать как здесь:
+        логика остается в Advert, а из миксина наследуется только связанное с repr_color_code.
+        Если все же первое, то достаточно перенести метод целиком в ColorizeMixin.
+        """
         if self.title in self.COLORTABLE.keys():
             self.repr_color_code = self.COLORTABLE[self.title]
         else:
