@@ -60,6 +60,13 @@ class ColorizeMixin:
 
     repr_color_code = COLORTABLE['default']
 
+    def __repr__(self):
+        if self.title in self.COLORTABLE.keys():
+            self.repr_color_code = self.COLORTABLE[self.title]
+        else:
+            self.repr_color_code = self.COLORTABLE['default']
+        return f'\033[{self.repr_color_code}m{self.title} | {self.price} ₽'
+
 
 class Advert(ColorizeMixin, JSONToObject):
     def __init__(self, loaded_json):
@@ -97,12 +104,11 @@ class Advert(ColorizeMixin, JSONToObject):
 
     def __repr__(self):
         """
-        Насчет этого метода я так и не понял, предполагалось ли его подмешивать, или реализовать как здесь:
-        логика остается в Advert, а из миксина наследуется только связанное с repr_color_code.
-        Если все же первое, то достаточно перенести метод целиком в ColorizeMixin.
+        Реализация метода связана с требованием сохранить работоспособность программы - и класса -
+        в случае удаления миксина. Так даже в последнем случае экземпляры Advert сохранят форматированный вывод,
+        пусть и без цвета.
         """
-        if self.title in self.COLORTABLE.keys():
-            self.repr_color_code = self.COLORTABLE[self.title]
+        if 'ColorizeMixin' in [base_class.__name__ for base_class in self.__class__.__bases__]:
+            return ColorizeMixin.__repr__(self)
         else:
-            self.repr_color_code = self.COLORTABLE['default']
-        return f'\033[{self.repr_color_code}m{self.title} | {self.price} ₽'
+            return f'{self.title} | {self.price} ₽'
